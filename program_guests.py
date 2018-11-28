@@ -13,7 +13,8 @@ def run():
     while True:
         action = hosts.get_action()
 
-        if action == "m":
+        if action == "s":
+            state.active_account = None
             return
         elif not state.active_account and action not in hosts.pre_login_commands:
             error_msg("You must log in or create account first.")
@@ -44,7 +45,7 @@ def show_commands():
     print("View [y]our dogs")
     print("[B]ook a room")
     print("[V]iew your bookings")
-    print("Change [M]ode (guest or host)")
+    print("[S]witch user")
     print("e[X]it app")
     print("[?] Help (this info)")
 

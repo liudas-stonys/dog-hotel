@@ -1,6 +1,7 @@
 import datetime
 import infrastructure.state as state
 import services.data_service as svc
+import re
 from colorama import Fore
 from dateutil import parser
 
@@ -15,7 +16,8 @@ def run():
     while True:
         action = get_action()
 
-        if action == "m":
+        if action == "s":
+            state.active_account = None
             return
         elif not state.active_account and action not in pre_login_commands:
             error_msg("You must log in or create account first.")
@@ -46,7 +48,7 @@ def show_commands():
     print("List [y]our rooms")
     print("[U]pdate room availability")
     print("[V]iew your bookings")
-    print("Change [m]ode (guest or host)")
+    print("[S]witch user")
     print("E[x]it app")
     print("[?] Help (this info)")
 
@@ -55,7 +57,13 @@ def create_account(is_host):
     section_msg("\n**********************  REGISTER  **********************\n")
 
     name = input("What is your name? ")
-    email = input("What is your email? ").strip().lower()
+
+    while True:
+        email = input("What is your email? ")
+        if is_valid_email(email):
+            break
+        else:
+            error_msg("Invalid email.")
 
     old_account = svc.find_account_by_email(email)
     if old_account:
@@ -194,6 +202,11 @@ def get_action():
 
     action = input(Fore.YELLOW + text + Fore.WHITE)
     return action.strip().lower()
+
+
+def is_valid_email(email):
+    if len(email) > 7:
+        return bool(re.match("^.+@(\[?)[a-zA-Z0-9-.]+.([a-zA-Z]{2,3}|[0-9]{1,3})(]?)$", email))
 
 
 def unknown_command():
